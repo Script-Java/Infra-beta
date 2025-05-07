@@ -1,1 +1,6 @@
-flask
+fastapi
+uvicorn
+openai
+pandas
+duckdb
+python-dotenv
