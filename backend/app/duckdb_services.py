@@ -1,6 +1,14 @@
 import pandas as pd
 import duckdb
 from fastapi.responses import JSONResponse
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+DATABASE_URL = "duckdb+duckdb:///./app.duckdb"
+
+engine = create_async_engine(DATABASE_URL)
+Base = declarative_base()
+async_session_maker = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 def run_duckdb_query(file, query: str):
     try:

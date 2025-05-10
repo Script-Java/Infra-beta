@@ -4,3 +4,5 @@ openai
 pandas
 duckdb
 python-dotenv
+sqlalchemy
+fastapi-users[sqlalchemy2,oauth]
