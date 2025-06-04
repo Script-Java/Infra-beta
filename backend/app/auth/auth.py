@@ -2,12 +2,12 @@
 from fastapi import FastAPI
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import JWTStrategy
-from models import User, UserManager
-from app.duckdb_services import async_session_maker
+from .models import User, UserManager
+from ..duckdb_services import async_session_maker
 
 SECRET = "SECRET"
 
-def get_user_manager():
+async def get_user_manager():
     yield UserManager(User, async_session_maker)
 
 auth_backend = JWTStrategy(secret=SECRET, lifetime_seconds=3600)
