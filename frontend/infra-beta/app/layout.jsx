@@ -1,4 +1,6 @@
 import "./globals.css";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 
 
 export const metadata = {
@@ -9,10 +11,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
-        {children}
+      <body className={`antialiased bg-gray-950 text-gray-200`}>
+        <Navbar />
+        <div className="min-h-screen">{children}</div>
+        <Footer />
       </body>
     </html>
   );
