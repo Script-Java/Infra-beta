@@ -1,6 +1,6 @@
 from fastapi_users.db import SQLAlchemyBaseUserTable, BaseUserManager, IntegerIDMixin
 from sqlalchemy import Column, Boolean
-from db import Base
+from ..duckdb_services import Base
 
 class User(SQLAlchemyBaseUserTable[int], Base):
     is_active = Column(Boolean, default=True)

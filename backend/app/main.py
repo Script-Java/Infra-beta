@@ -1,16 +1,30 @@
 from fastapi import FastAPI, UploadFile, File, Form
-from analyzer import DataAnalyzer
+from fastapi.middleware.cors import CORSMiddleware
+from .analyzer import DataAnalyzer
 import os
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from typing import List, Optional
 import json
-from renderer import Renderer
-from duckdb_services import get_duckdb_schema, run_duckdb_query
+from .renderer import Renderer
+from .duckdb_services import get_duckdb_schema, run_duckdb_query
+from .auth.auth import router as auth_router
 
 load_dotenv()
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
 app = FastAPI()
+
+# Allow requests from the frontend during development
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Authentication routes
+app.include_router(auth_router)
 
 class ChatMessage(BaseModel):
     role: str
@@ -81,3 +95,4 @@ async def run_sql(file: UploadFile = File(...), query: str = Form(...)):
 @app.post("/sql_schema")
 async def sql_schema(file: UploadFile = File(...)):
     return get_duckdb_schema(file)
+

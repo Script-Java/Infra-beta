@@ -1,9 +1,9 @@
 # main.py
-from fastapi import FastAPI
+from fastapi import APIRouter
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import JWTStrategy
-from models import User, UserManager
-from app.duckdb_services import async_session_maker
+from .models import User, UserManager
+from ..duckdb_services import async_session_maker
 
 SECRET = "SECRET"
 
@@ -18,8 +18,9 @@ fastapi_users = FastAPIUsers(
     User,
 )
 
-app = FastAPI()
+router = APIRouter()
 
-app.include_router(fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt")
-app.include_router(fastapi_users.get_register_router(), prefix="/auth")
-app.include_router(fastapi_users.get_users_router(), prefix="/users")
+router.include_router(fastapi_users.get_auth_router(auth_backend), prefix="/auth/jwt")
+router.include_router(fastapi_users.get_register_router(), prefix="/auth")
+router.include_router(fastapi_users.get_users_router(), prefix="/users")
+
