@@ -35,24 +35,30 @@ class DataAnalyzer:
         if reset_data:
             self.data.seek(0)
 
-        if hasattr(self.data, 'name'):
+        if hasattr(self.data, 'filename'):
+            # FastAPI's UploadFile exposes the original file name via ``filename``
+            name = self.data.filename
+            file_obj = self.data.file
+        elif hasattr(self.data, 'name'):
             name = self.data.name
+            file_obj = self.data
         else:
             name = ""
+            file_obj = self.data
 
         if name.endswith('.csv'):
-            self.df = pd.read_csv(self.data)
+            self.df = pd.read_csv(file_obj)
         elif name.endswith('.xlsx'):
-            self.df = pd.read_excel(self.data)
+            self.df = pd.read_excel(file_obj)
         elif name.endswith('.json'):
-            self.df = pd.read_json(self.data)
+            self.df = pd.read_json(file_obj)
         elif name.endswith('.parquet'):
-            self.df = pd.read_parquet(self.data)
+            self.df = pd.read_parquet(file_obj)
         elif name.endswith('.db') or name.endswith('.sqlite'):
             conn = sqlite3.connect(name)
             self.df = pd.read_sql_query("SELECT * FROM your_table", conn)
         elif name.endswith('.txt'):
-            self.df = pd.read_csv(self.data, delimiter="\t")
+            self.df = pd.read_csv(file_obj, delimiter="\t")
         else:
             raise ValueError("Unsupported file format.")
 
@@ -87,9 +93,14 @@ class DataAnalyzer:
         )
         content = response.choices[0].message.content
 
+        match = re.search(r"\[\s*{.*?}\s*\]", content, re.DOTALL)
+        if match is None:
+            return {
+                "error": "AI response did not contain JSON instructions.",
+                "raw_response": content,
+            }
         try:
-            json_block = re.search(r"\[\s*{.*?}\s*\]", content, re.DOTALL).group(0)
-            return json.loads(json_block)
+            return json.loads(match.group(0))
         except json.JSONDecodeError as e:
             return {
                 "error": "Failed to parse AI JSON response.",
