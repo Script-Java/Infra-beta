@@ -12,7 +12,11 @@ export default function RootLayout({ children }) {
       <body
         className={`antialiased`}
       >
-        {children}
+        <nav className="p-4 bg-gray-100 flex gap-4">
+          <a href="/login" className="text-blue-600">Login</a>
+          <a href="/register" className="text-blue-600">Register</a>
+        </nav>
+        <div className="p-4">{children}</div>
       </body>
     </html>
   );
