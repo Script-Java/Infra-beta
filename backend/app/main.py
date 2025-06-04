@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from fastapi.responses import StreamingResponse
 from analyzer import DataAnalyzer
 import os
 from dotenv import load_dotenv
@@ -55,6 +56,28 @@ async def chat(
 
     response = analyzer.data_chat(user_query=query, chat_history=chat_history)
     return {"response": response}
+
+@app.post("/chat_stream")
+async def chat_stream(
+    file: UploadFile = File(...),
+    query: str = Form(...),
+    history: Optional[str] = Form(None)
+):
+    analyzer = DataAnalyzer(key=OPENAI_KEY, data=file.file)
+
+    chat_history = None
+    if history:
+        try:
+            parsed = json.loads(history)
+            chat_history = [(msg["role"], msg["content"]) for msg in parsed]
+        except Exception:
+            return {"error": "Invalid history format"}
+
+    def event_stream():
+        for delta in analyzer.data_chat_stream(user_query=query, chat_history=chat_history):
+            yield delta
+
+    return StreamingResponse(event_stream(), media_type="text/plain")
 
 @app.post('/report')
 async def report(file: UploadFile = File(...)):
