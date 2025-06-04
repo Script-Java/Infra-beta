@@ -1,2 +1,6 @@
 @import "tailwindcss";
 
+body {
+  @apply bg-gradient-to-br from-blue-50 to-indigo-100 text-gray-800 min-h-screen;
+}
+

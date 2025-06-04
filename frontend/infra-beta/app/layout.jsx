@@ -1,4 +1,7 @@
 import "./globals.css";
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 
 export const metadata = {
@@ -9,14 +12,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
-        className={`antialiased`}
-      >
-        <nav className="p-4 bg-gray-100 flex gap-4">
-          <a href="/login" className="text-blue-600">Login</a>
-          <a href="/register" className="text-blue-600">Register</a>
+      <body className={`${inter.className} antialiased`}>
+        <nav className="bg-white shadow-sm">
+          <div className="max-w-4xl mx-auto flex items-center gap-6 p-4">
+            <a href="/" className="font-semibold text-gray-700">Home</a>
+            <a href="/login" className="text-blue-600 hover:underline">Login</a>
+            <a href="/register" className="text-blue-600 hover:underline">Register</a>
+          </div>
         </nav>
-        <div className="p-4">{children}</div>
+        <div className="p-4 max-w-4xl mx-auto">{children}</div>
       </body>
     </html>
   );
