@@ -116,6 +116,30 @@ class DataAnalyzer:
 
         return response.choices[0].message.content.strip()
 
+    def data_chat_stream(self, user_query, chat_history=None):
+        if not user_query:
+            yield ""
+            return
+
+        prompt = self.prompt_manager.data_chat_prompt(user_query)
+
+        message_history = [{"role": "system", "content": "You are a smart and friendly data assistant."}]
+        if chat_history:
+            message_history += [{"role": role, "content": content} for role, content in chat_history]
+
+        message_history.append({"role": "user", "content": prompt})
+
+        stream = self.client.chat.completions.create(
+            model="gpt-4-turbo",
+            messages=message_history,
+            stream=True,
+        )
+
+        for chunk in stream:
+            delta = chunk.choices[0].delta.content
+            if delta:
+                yield delta
+
     def data_describe(self):
         return self.df.describe().round(2).to_dict()
 
